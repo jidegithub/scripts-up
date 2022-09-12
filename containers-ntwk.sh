@@ -3,6 +3,13 @@
 #solution should create 3 docker images and run the containers from them
 #the 3 containers should be able to ping each other regardless of where it is being deployed
 
+# TO DO
+# Abstraction 
+# UX 
+# Organise functions
+# Garbage collection
+
+
 # Colour scheme
 black='\033[30;40m'
 red='\033[31;40m'
