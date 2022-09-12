@@ -14,12 +14,22 @@ SQL_NETWORK=$SQL_CONTAINER-network
 KIBANA_NETWORK=$KIBANA_CONTAINER-network
 PING_NETWORK=ping-network
 
-#stop all existing containers
-stop_containers (){
-  echo "stopping selected containers.." 
- docker stop $SQL_CONTAINER $NGINX_CONTAINER $KIBANA_CONTAINER
+#check if previous command was executed successfully
+#Wanted to use this but it will mess up the looks
+function step_successful {
+ if  [ $? -eq 0 ]; then
+  echo
+ else
+  echo "there is an error"
+  exit
+ fi
 }
-echo
+
+#stop all existing containers if they exist
+stop_containers (){
+ echo "stopping selected containers.." 
+ docker stop $NGINX_CONTAINER $SQL_CONTAINER $KIBANA_CONTAINER
+}
 
 stop_containers
 
@@ -31,7 +41,6 @@ do
    docker network rm $network
  fi
 done
-echo
 
 #first, write a function that fetches and run mysql
 get_mysql_image (){
@@ -64,11 +73,7 @@ run_my_sql_client_container (){
   docker run -it --network $SQL_NETWORK --rm mysql mysql -h$SQL_CONTAINER -uexample-user -p
 }
 
-get_mysql_image
-create_sql_network
-run_my_sql_server_container
-docker container ls -f name=^/$SQL_CONTAINER$
-
+get_mysql_image && create_sql_network && run_my_sql_server_container && docker container ls -f name=^/$SQL_CONTAINER$
 ####################################################
 echo
 
@@ -88,10 +93,7 @@ run_nginx_container (){
  docker run -d --name $NGINX_CONTAINER -p 80:80 nginx
 }
 
-get_nginx_image
-run_nginx_container
-docker container ls -f name=^/$NGINX_CONTAINER$
-
+get_nginx_image && run_nginx_container && docker container ls -f name=^/$NGINX_CONTAINER$
 ######################################################
 echo
 
@@ -116,11 +118,7 @@ run_kibana_container (){
   docker run -d --name $KIBANA_CONTAINER --net $KIBANA_NETWORK -p 5601:5601 kibana:6.4.2
 }
 
-get_kibana_image
-create_kibana_network
-run_kibana_container
-docker container ls -f name=^/$KIBANA_CONTAINER$
-
+get_kibana_image && create_kibana_network && run_kibana_container && docker container ls -f name=^/$KIBANA_CONTAINER$
 
 #create a network that connect all services
 docker network create $PING_NETWORK
