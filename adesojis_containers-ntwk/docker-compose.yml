@@ -1,0 +1,40 @@
+version: \'3\'
+services:
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - my_net
+  mysql:
+    image: mysql:5.7
+    container_name: database
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker-build.sh: line 13: dialog: command not found:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    networks:
+      - my_net
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.2
+    container_name: Kibana
+    ports:
+      - 3306:3306
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    environment:
+      - SERVER_NAME=kibana.example.org
+      - ELASTICSEARCH_URL: http://elasticsearch.example.org
+    networks:
+      - my_net
+volumes:
+  ./docker-build.sh: line 13: dialog: command not found:
+networks:
+  my_net:
